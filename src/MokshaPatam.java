@@ -3,20 +3,62 @@
  * A puzzle created by Zach Blick
  * for Adventures in Algorithms
  * at Menlo School in Atherton, CA
- *
+ * <p>
  * Completed by: Tony Dokanchi
- *
  */
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class MokshaPatam {
     public static int fewestMoves(int boardsize, int[][] ladders, int[][] snakes) {
-        int numRolls = 0;
+        Queue<Integer> toVisit = new LinkedList<Integer>();
+        int[] map = new int[boardsize + 1];
+        boolean[] visited = new boolean[boardsize + 1];
+        int[] rollsToReach = new int[boardsize + 1];
 
+        // Set up map
+        for (int[] ladder : ladders) {
+            map[ladder[0]] = ladder[1];
+        }
+        for (int[] snake : snakes) {
+            map[snake[0]] = snake[1];
+        }
+
+        // We start on cell 1
+        visited[1] = true;
+        toVisit.add(1);
+
+        while (!toVisit.isEmpty()) {
+            int startCell = toVisit.remove();
+            for (int roll = 1; roll <= 6; roll++) {
+                // Move to nextCell
+                int nextCell = startCell + roll;
+                if (map[nextCell] != 0) {
+                    nextCell = map[nextCell];
+                }
+                // If the goal is reached
+                if (nextCell == boardsize) {
+                    return 1 + rollsToReach[startCell];
+                }
+                // If nextCell hasn't been seen yet
+                if (!visited[nextCell]) {
+                    toVisit.add(nextCell);
+                    visited[nextCell] = true;
+                    rollsToReach[nextCell] = 1 + rollsToReach[startCell];
+                }
+
+            }
+        }
+        return -1;
+    }
+
+    public static int fewestMovesOld(int boardsize, int[][] ladders, int[][] snakes) {
+        int numRolls = 0;
         // foundCells = all cells visited, ever
         // oldCells = the start points of the next time step
-        // newCElls = the end points of the next time step
+        // newCells = the end points of the next time step
         ArrayList<Integer> foundCells = new ArrayList<Integer>();
         ArrayList<Integer> oldCells = new ArrayList<Integer>();
         ArrayList<Integer> newCells = new ArrayList<Integer>();
@@ -31,9 +73,7 @@ public class MokshaPatam {
                 for (int oldCell : oldCells) {
                     // Move from oldCell to newCell
                     int newCell = oldCell + roll;
-                    while (newCell != followPath(newCell, ladders, snakes)) {
-                        newCell = followPath(newCell, ladders, snakes);
-                    }
+                    newCell = followPath(newCell, ladders, snakes);
 
                     // If the goal is reached
                     if (newCell == boardsize) {

@@ -66,7 +66,7 @@ public class MokshaPatamTest {
                 int answer = Integer.parseInt(answerReader.readLine());
                 loadTest(testReader);
                 assertEquals(answer, studentSolution.fewestMoves(boardsize, ladders, snakes),
-                        "Test " + testNumber + " failed: should return " + answer);
+                        "Test " + i + " failed: should return " + answer);
             }
         } catch (IOException e) {
             System.out.println("Error opening test file #" + testNumber);
